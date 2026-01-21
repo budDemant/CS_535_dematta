@@ -1,6 +1,6 @@
 # CS 535 (Computer Graphics)
 ***Spring 2026***  
-***Author: Your Name Here***  
+***Author: Anthony DeMatteo***  
 ***Original Author: Dr. Michael J. Reale***  
 ***SUNY Polytechnic Institute*** 
 
