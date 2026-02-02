@@ -172,6 +172,7 @@ int main(int argc, char **argv) {
         // Creation information for basic Vulkan components
         pro::VulkanInitCreateInfo createInfo {};
         createInfo.appName = appName;
+        createInfo.requestedAppVulkanVersionMinor = 3;
         createInfo.createSurfaceFunc = [window](VkInstance instance, VkSurfaceKHR& surface) {
             return glfwCreateWindowSurface(instance, window, nullptr, &surface);
         };

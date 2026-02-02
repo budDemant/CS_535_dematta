@@ -245,7 +245,7 @@ namespace pro {
             bool computeQueueSuccess = getVulkanQueue(vkbDevice, vkb::QueueType::compute, computeQueue_);
             bool transferQueueSuccess = getVulkanQueue(vkbDevice, vkb::QueueType::transfer, transferQueue_);
 
-            if(!graphQueueSuccess || !presentQueueSuccess || !computeQueueSuccess || !transferQueueSuccess) {
+            if(!graphQueueSuccess || !presentQueueSuccess) { // || !computeQueueSuccess || !transferQueueSuccess) {
                 device_.destroy();
                 instance_.destroySurfaceKHR(surface_); 
                 vkb::destroy_instance(bootInstance_);                 
