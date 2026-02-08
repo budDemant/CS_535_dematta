@@ -80,7 +80,7 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     // Define behavior for the color attachment (including clear color)
     vk::RenderingAttachmentInfoKHR colorAtt = pro::createColorAttachment(
         swapImage.view, 
-        vk::ClearColorValue {0.0f, 1.0f, 1.0f, 1.0f});
+        vk::ClearColorValue {1.0f, 1.0f, 0.0f, 1.0f});
 
     // Define behavior for the depth attachment
     vk::RenderingAttachmentInfoKHR depthAtt = pro::createDepthAttachment(depthImage.view);
