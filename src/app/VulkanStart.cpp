@@ -98,14 +98,10 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     cd.commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineData.pipeline);
     
     // Set up viewport and scissors
-    vk::Viewport viewports[] = {
-        {0, 0, 
-        (float)vkInitData.swapchain().extent.width, 
-        (float)vkInitData.swapchain().extent.height, 
-        0.0f, 1.0f}};
+    vk::Viewport viewports[] = { pro::makeDefaultViewport(vkInitData) };    
     cd.commandBuffer.setViewport(0, viewports);
     
-    vk::Rect2D scissors[] = {{{0,0}, vkInitData.swapchain().extent}};
+    vk::Rect2D scissors[] = { pro::makeDefaultScissors(vkInitData) };
     cd.commandBuffer.setScissor(0, scissors);
 
     // FOR NOW, just render all meshes
@@ -172,9 +168,19 @@ int main(int argc, char **argv) {
         // Creation information for basic Vulkan components
         pro::VulkanInitCreateInfo createInfo {};
         createInfo.appName = appName;
-        createInfo.requestedAppVulkanVersionMinor = 3;
-        createInfo.createSurfaceFunc = [window](VkInstance instance, VkSurfaceKHR& surface) {
+        // If you encounter errors with instance creation, try requesting Vulkan 1.3:
+        // createInfo.requestedAppVulkanVersionMinor = 3;
+        
+        // If you encounter errors with compute and/or transfer queue creation, try these:
+        createInfo.requireComputeQueue = false;
+        createInfo.requireTransferQueue = false;
+
+        createInfo.createSurfaceFunc = [window](VkInstance instance, VkSurfaceKHR& surface) {            
             return glfwCreateWindowSurface(instance, window, nullptr, &surface);
+        };
+
+        createInfo.getCurrentWindowSizeFunc = [window](int &width, int &height) {
+            glfwGetFramebufferSize(window, &width, &height);
         };
     
         // Create the basic Vulkan components
@@ -271,7 +277,7 @@ int main(int argc, char **argv) {
             {{0.5f, 0.5f, 0.5f},    {0,0,1,1}},
             {{-0.5f, 0.5f, 0.5f},   {1,1,1,1}}
         };
-        simpleQuad.indices = { 0, 2, 1, 2, 0, 3 };        
+        simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
         allHostMeshes.push_back(simpleQuad);
 
         // Create the Vulkan meshes
