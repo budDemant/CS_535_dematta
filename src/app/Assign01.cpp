@@ -76,11 +76,12 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
 
     // Transition swap image from undefined to color buffer
     performVulkanImageTransition(cd.commandBuffer, swapImage.image, pro::IMAGE_TRANSITION_TYPE::UNDEF_TO_COLOR);
-
+    
     // Define behavior for the color attachment (including clear color)
+    vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 0.0f, 1.0f};
     vk::RenderingAttachmentInfoKHR colorAtt = pro::createColorAttachment(
         swapImage.view, 
-        vk::ClearColorValue {1.0f, 1.0f, 0.0f, 1.0f});
+        backgroundColor);
 
     // Define behavior for the depth attachment
     vk::RenderingAttachmentInfoKHR depthAtt = pro::createDepthAttachment(depthImage.view);
@@ -325,6 +326,10 @@ int main(int argc, char **argv) {
             if(!pro::presentSwapImage(vkInitData, commandData, indexSwap, resizeFunc)) {
                 cout << "Warning: Presentation was not successful." << endl;
             }
+
+            // color change logic here maybe
+    
+
         }
         
         ///////////////////////////////////////////////////////////////////////
