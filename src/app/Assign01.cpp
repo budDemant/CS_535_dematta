@@ -289,7 +289,7 @@ int main(int argc, char **argv) {
             pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         }
 
-        // backgroundColor variable
+        // Background color data
         vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
         const glm::vec3 first_color(0.12f, 0.25f, 0.60f);
         const glm::vec3 second_color(0.90f, 0.50f, 0.20f);
