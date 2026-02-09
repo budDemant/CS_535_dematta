@@ -290,7 +290,13 @@ int main(int argc, char **argv) {
         }
 
         // backgroundColor variable
-        vk::ClearColorValue backgroundColor = {0.7, 0.5, 0.1f, 1.0f};
+        vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        const glm::vec3 first_color(0.12f, 0.25f, 0.60f);
+        const glm::vec3 second_color(0.90f, 0.50f, 0.20f);
+        const float switchSeconds = 3.0f;
+        bool useFirst = true; // use first_color
+        auto lastSwitchTime = pro::getTime();
+
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -333,27 +339,14 @@ int main(int argc, char **argv) {
             };
 
             // Background color change logic
-            chrono::steady_clock::time_point start = pro::getTime();
-            this_thread::sleep_for(chrono::milliseconds(3500));
-            if (backgroundColor.float32[1] <= 1.0f && backgroundColor.float32[1] >= 0.0f) {
-                backgroundColor.float32[0] -= 0.2f;
-                backgroundColor.float32[1] += 0.1f;
-                backgroundColor.float32[2] += 0.2f;
-                
+            auto now = pro::getTime();
+            float time_elapsed = pro::getElapsedSeconds(lastSwitchTime, now);
+            if (time_elapsed >= switchSeconds) {
+                useFirst = !useFirst; // use second_color
+                lastSwitchTime = now;
             }
-            else {
-                backgroundColor.float32[0] += 0.1f;
-                backgroundColor.float32[1] -= 0.4f;
-                backgroundColor.float32[2] -= 0.3f;
-                ;
-            }
-            cout << backgroundColor.float32 << endl;
-            
-
-            chrono::steady_clock::time_point end = pro::getTime();
-
-            float time_elapsed = pro::getElapsedSeconds(start, end);
-            cout << "Time Elapsed (between bg color change): " << time_elapsed << " seconds" << endl;
+            glm::vec3 color = useFirst ? first_color: second_color; 
+            backgroundColor = {color.r, color.g, color.b, 1.0f};
             
     
 
