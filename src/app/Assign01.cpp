@@ -328,6 +328,13 @@ int main(int argc, char **argv) {
             }
 
             // color change logic here maybe
+            chrono::steady_clock::time_point start = pro::getTime();
+
+            this_thread::sleep_for(chrono::milliseconds(3500));
+            cout << "3.5 seconds have passed..." << endl;
+
+            chrono::steady_clock::time_point end = pro::getTime();
+            
     
 
         }
