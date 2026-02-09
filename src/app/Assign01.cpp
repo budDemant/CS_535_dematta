@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
         }
 
         // backgroundColor variable
-        vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 0.0f, 1.0f};
+        vk::ClearColorValue backgroundColor = {0.7, 0.5, 0.1f, 1.0f};
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -334,10 +334,21 @@ int main(int argc, char **argv) {
 
             // Background color change logic
             chrono::steady_clock::time_point start = pro::getTime();
-
             this_thread::sleep_for(chrono::milliseconds(3500));
-            backgroundColor = {1.0f, 0.0f, 0.0f, 1.0f};
-
+            if (backgroundColor.float32[1] <= 1.0f && backgroundColor.float32[1] >= 0.0f) {
+                backgroundColor.float32[0] -= 0.2f;
+                backgroundColor.float32[1] += 0.1f;
+                backgroundColor.float32[2] += 0.2f;
+                
+            }
+            else {
+                backgroundColor.float32[0] += 0.1f;
+                backgroundColor.float32[1] -= 0.4f;
+                backgroundColor.float32[2] -= 0.3f;
+                ;
+            }
+            cout << backgroundColor.float32 << endl;
+            
 
             chrono::steady_clock::time_point end = pro::getTime();
 
