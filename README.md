@@ -17,3 +17,6 @@ The rest of the dependencies will be automatically fetched by CMake.
 
 ### VulkanStart
 This application should show a multi-color quad on the screen with a cyan background.
+
+### Assign01
+This application is a copy of VulkanStart, except it starts with a different background color, and alternates between that color and another one every 3 seconds. It uses the Prometheus time functions getTime() and getElapsedSeconds() to get the current time and count the time elapsed since the last color change. Ff the time elapsed is greater than 3 seconds, the color channels for the background are changed.
