@@ -66,7 +66,8 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
                     const pro::VulkanSwapImage &swapImage,
                     const pro::VulkanImage &depthImage,
                     pro::VulkanPipelineData &pipelineData,
-                    vector<pro::VulkanMesh> allMeshes) {
+                    vector<pro::VulkanMesh> allMeshes,
+                    vk::ClearColorValue &backgroundColor) {
 
     // Reset our command pool so it's cleared and ready to go
     vkInitData.device().resetCommandPool(cd.commandPool);
@@ -78,7 +79,6 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     performVulkanImageTransition(cd.commandBuffer, swapImage.image, pro::IMAGE_TRANSITION_TYPE::UNDEF_TO_COLOR);
     
     // Define behavior for the color attachment (including clear color)
-    vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 0.0f, 1.0f};
     vk::RenderingAttachmentInfoKHR colorAtt = pro::createColorAttachment(
         swapImage.view, 
         backgroundColor);
@@ -289,6 +289,10 @@ int main(int argc, char **argv) {
             pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         }
 
+        // backgroundColor variable
+        vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 0.0f, 1.0f};
+
+
         ///////////////////////////////////////////////////////////////////////
         // MAIN RENDER LOOP
         ///////////////////////////////////////////////////////////////////////
@@ -317,7 +321,8 @@ int main(int argc, char **argv) {
                 vkInitData.swapchain().swaps[indexSwap], 
                 allDepthImages[indexFlight],
                 pipelineData,
-                allMeshes);
+                allMeshes,
+                backgroundColor);
                     
             // Submit to queue
             pro::submitToGraphicsQueue(vkInitData, commandData, indexSwap, resizeFunc);
@@ -325,15 +330,19 @@ int main(int argc, char **argv) {
             // Present
             if(!pro::presentSwapImage(vkInitData, commandData, indexSwap, resizeFunc)) {
                 cout << "Warning: Presentation was not successful." << endl;
-            }
+            };
 
-            // color change logic here maybe
+            // Background color change logic
             chrono::steady_clock::time_point start = pro::getTime();
 
             this_thread::sleep_for(chrono::milliseconds(3500));
-            cout << "3.5 seconds have passed..." << endl;
+            backgroundColor = {1.0f, 0.0f, 0.0f, 1.0f};
+
 
             chrono::steady_clock::time_point end = pro::getTime();
+
+            float time_elapsed = pro::getElapsedSeconds(start, end);
+            cout << "Time Elapsed (between bg color change): " << time_elapsed << " seconds" << endl;
             
     
 
