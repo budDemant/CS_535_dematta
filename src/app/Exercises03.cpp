@@ -43,6 +43,11 @@ int main (int argc, char **argv) {
         initCreateInfo.requireTransferQueue = false;
 
         pro::VulkanInitData vkInitData(initCreateInfo);
+
+        pro::listAvailablePhysicalDevices(vkInitData.instance());
+
+        cout << "THE CHOSEN ONE:" << endl; // if you have integrated and dedicated GPU
+        pro::printPhysicalDeviceProperties(vkInitData.physicalDevice());
     }
 
     // TODO
