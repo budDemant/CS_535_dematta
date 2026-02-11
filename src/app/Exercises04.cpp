@@ -48,6 +48,10 @@ int main (int argc, char **argv) {
 
         cout << "THE CHOSEN ONE:" << endl; // if you have integrated and dedicated GPU
         pro::printPhysicalDeviceProperties(vkInitData.physicalDevice());
+
+        while(!glfwWindowShouldClose(window)){
+            glfwPollEvents();
+        }
     }
 
     // TODO
