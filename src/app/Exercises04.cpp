@@ -3,6 +3,13 @@
 #include "pro/Prometheus.hpp"
 using namespace std;
 
+// globals
+bool didWindowResize = false;
+
+static void window_resize_callback(GLFWwindow* window, int width, int height) {
+    didWindowResize = true;
+}
+
 int main (int argc, char **argv) {
     cout << "Starting exercises!" << endl;
 
@@ -24,6 +31,9 @@ int main (int argc, char **argv) {
         glfwTerminate();
         exit(1);
     }
+
+    // key/mouse callbacks
+    glfwSetFramebufferSizeCallback(window, window_resize_callback);
 
     {
         pro::VulkanInitCreateInfo initCreateInfo {};
