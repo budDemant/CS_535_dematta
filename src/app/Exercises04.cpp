@@ -59,8 +59,24 @@ int main (int argc, char **argv) {
         cout << "THE CHOSEN ONE:" << endl; // if you have integrated and dedicated GPU
         pro::printPhysicalDeviceProperties(vkInitData.physicalDevice());
 
+        pro::OnResizeFunc resizeFunc = [&vkInitData, window]() {
+            int width = 0;
+            int height = 0;
+            do {
+                glfwGetFramebufferSize(window, &width, &height);
+                glfwWaitEvents();
+            } while(width == 0 || height == 0);
+            vkInitData.recreateVulkanSwapchain();
+            cout << "Swapchain recreated..." << endl;
+        };
+
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
+
+            if(didWindowResize) {
+                resizeFunc();
+                didWindowResize = false;
+            }
         }
     }
 
