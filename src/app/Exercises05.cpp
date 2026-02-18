@@ -74,6 +74,11 @@ int main (int argc, char **argv) {
         uint32_t framesRendered = 0;
         int numberFramesInFlight = 1;
 
+        vk::QueryPoolCreateInfo qpci {};
+        qpci.queryType = vk::QueryType::eTimestamp;
+        qpci.queryCount = 2;
+        vk::QueryPool queryPool = vkInitData.device().createQueryPool(qpci);
+
 
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
@@ -83,11 +88,60 @@ int main (int argc, char **argv) {
                 didWindowResize = false;
             }
 
+            unsigned int indexFlight = framesRendered % numberFramesInFlight;
+            unsigned int indexSwap = pro::acquireNextSwapImage(vkInitData,
+                                                commandData, resizeFunc);
+
+            vkInitData.device().resetCommandPool(commandData.commandPool);
+            commandData.commandBuffer.begin(vk::CommandBufferBeginInfo());
+
+            commandData.commandBuffer.resetQueryPool(queryPool, 0, 2);
+            commandData.commandBuffer.writeTimestamp2(vk::PipelineStageFlagBits2::eTopOfPipe, 
+                                                                                queryPool, 0);
+
+            pro::performVulkanImageTransition(
+                commandData.commandBuffer,
+                vkInitData.swapchain().swaps[indexSwap].image,
+                pro::IMAGE_TRANSITION_TYPE::UNDEF_TO_COLOR
+            );
+
+            // TODO: this is where the rendering happens
+
+            pro::performVulkanImageTransition(
+                commandData.commandBuffer,
+                vkInitData.swapchain().swaps[indexSwap].image,
+                pro::IMAGE_TRANSITION_TYPE::COLOR_TO_PRESENT
+            );
+            
+            commandData.commandBuffer.writeTimestamp2(vk::PipelineStageFlagBits2::eTopOfPipe, 
+                                                                                queryPool, 1);
+
+            commandData.commandBuffer.end();
+
+            pro::submitToGraphicsQueue(vkInitData, commandData, indexSwap, resizeFunc);
+
+            if (!pro::presentSwapImage(vkInitData, commandData, indexSwap, resizeFunc)) {
+                cerr << "Error: Presentation not successful!" << endl;
+            }
+        
             framesRendered++;
+
+            uint64_t timestamps[2] = {};
+            vkInitData.device().getQueryPoolResults(
+                queryPool, 0, 2, sizeof(timestamps), timestamps,
+                sizeof(uint64_t),
+                vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+
+            auto props = vkInitData.physicalDevice().getProperties();
+            double nsPerTick = props.limits.timestampPeriod;
+            double deltaNs = (timestamps[1] - timestamps[0]) * nsPerTick;
+            // cout << "TIME for FRAME: " << deltaNs << endl;
         }
 
         vkInitData.device().waitIdle();
+        vkInitData.device().destroyQueryPool(queryPool);
         pro::cleanupFrameCommandData(vkInitData, commandData);
+
     }
 
     // TODO
