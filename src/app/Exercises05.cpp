@@ -70,6 +70,11 @@ int main (int argc, char **argv) {
             cout << "Swapchain recreated..." << endl;
         };
 
+        pro::FrameCommandData commandData = pro::createFrameCommandData(vkInitData);
+        uint32_t framesRendered = 0;
+        int numberFramesInFlight = 1;
+
+
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
 
@@ -77,7 +82,12 @@ int main (int argc, char **argv) {
                 resizeFunc();
                 didWindowResize = false;
             }
+
+            framesRendered++;
         }
+
+        vkInitData.device().waitIdle();
+        pro::cleanupFrameCommandData(vkInitData, commandData);
     }
 
     // TODO
