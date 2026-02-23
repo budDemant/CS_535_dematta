@@ -79,6 +79,18 @@ int main (int argc, char **argv) {
         qpci.queryCount = 2;
         vk::QueryPool queryPool = vkInitData.device().createQueryPool(qpci);
 
+        pro::VulkanPipelineCreateInfo pipelineCreateInfo(vkInitData);
+
+        pipelineCreateInfo.shaderInfo = {
+            pro::VulkanShaderCreateInfo(
+                "build/compiledshaders/" + appName + "/shader.vert.spv",
+                vk::ShaderStageFlagBits::eVertex
+            ),
+            pro::VulkanShaderCreateInfo(
+                "build/compiledshaders/" + appName + "/shader.frag.spv",
+                vk::ShaderStageFlagBits::eFragment)
+        };
+
 
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
