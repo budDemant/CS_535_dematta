@@ -6,6 +6,10 @@ using namespace std;
 // globals
 bool didWindowResize = false;
 
+struct ForgeVertex {
+    glm::vec3 pos;
+};
+
 static void window_resize_callback(GLFWwindow* window, int width, int height) {
     didWindowResize = true;
 }
@@ -21,7 +25,7 @@ int main (int argc, char **argv) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, true);
 
-    string appName = "Exercises05";
+    string appName = "Exercises06";
     int winWidth = 800;
     int winHeight = 600;
     GLFWwindow *window = glfwCreateWindow(winWidth, winHeight, appName.c_str(), nullptr, nullptr);
@@ -90,6 +94,18 @@ int main (int argc, char **argv) {
                 "build/compiledshaders/" + appName + "/shader.frag.spv",
                 vk::ShaderStageFlagBits::eFragment)
         };
+
+        pipelineCreateInfo.bindDesc = vk::VertexInputBindingDescription(
+            0, sizeof(ForgeVertex), vk::VertexInputRate::eVertex
+        );
+
+        pipelineCreateInfo.attribDesc.push_back(
+            vk::VertexInputAttributeDescription(
+                0, 0, vk::Format::eR32G32B32Sfloat, offsetof(ForgeVertex, pos)
+            )
+        );
+
+        
 
 
         while(!glfwWindowShouldClose(window)){
