@@ -35,6 +35,10 @@ int main (int argc, char **argv) {
     cout << "Length A: " << glm::length(A) << endl;
     cout << "Length normA: " << glm::length(normA) << endl;
 
+    glm::vec3 normB = glm::normalize(B);
+    float dotAB = glm::dot(normA, normB);
+    cout << "dotAB = " << dotAB << endl;
+
 
 
     if (!glfwInit()) {
