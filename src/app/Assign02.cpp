@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "pro/Prometheus.hpp"
+#include <cmath>
 
 using namespace std;
 
@@ -120,6 +121,29 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     // End recording
     cd.commandBuffer.end();
 }   
+
+
+pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
+    pro::HostMesh<ProVertex> triangleFan {};
+    const float PI = 3.14159265f;
+    const float RADIUS = 0.5f;
+    triangleFan.vertices.push_back(
+        {{0.0f, 0.0f, 0.5f}, {1,0,0,1}} // center vertex
+    );
+
+    for(unsigned int i = 0; i <= maxSub; i++) {
+        float angle_i = 2 * PI * i / maxSub;
+        float x = RADIUS * cos(angle_i);
+        float y = RADIUS * sin(angle_i);
+        triangleFan.vertices.push_back({
+            {x, y, 0.5f},
+            {x, y, 0.0f, 1.0f} // color: R and G values change with each new position vertex
+        });
+        triangleFan.indices.push_back(i);
+
+    };
+    return triangleFan;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // MAIN FUNCTION
@@ -270,7 +294,10 @@ int main(int argc, char **argv) {
 
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
-        // pro::HostMesh<ProVertex> createShape(int maxSub = 10, bool flipWinding = false)
+        
+        allHostMeshes.push_back(createShape(5));
+        
+        // pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false); 
         
         // pro::HostMesh<ProVertex> simpleQuad {};
         // simpleQuad.vertices = {
@@ -282,16 +309,16 @@ int main(int argc, char **argv) {
         // simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
         // allHostMeshes.push_back(simpleQuad);
 
-        pro::HostMesh<ProVertex> triangleFan {};
-        triangleFan.vertices = {
-            {{0.0f, 0.0f, 0.5f}, {1,0,0,1}},
-            {{0.5f, 0.0f, 0.5f}, {0,1,0,1}},
-            {{-0.5f, 0.5f, 0.5f}, {0,0,1,1}},
-            {{-0.5f, -0.5f, 0.5f}, {0,0,1,1}}
+        // pro::HostMesh<ProVertex> triangleFan {};
+        // triangleFan.vertices = {
+        //     {{0.0f, 0.0f, 0.5f}, {1,0,0,1}},
+        //     {{0.5f, 0.0f, 0.5f}, {0,1,0,1}},
+        //     {{-0.5f, 0.5f, 0.5f}, {0,0,1,1}},
+        //     {{-0.5f, -0.5f, 0.5f}, {0,0,1,1}}
 
-        };
-        triangleFan.indices = { 0, 1, 2, 0, 2, 3, 0, 3, 1}; 
-        allHostMeshes.push_back(triangleFan);
+        // };
+        // triangleFan.indices = { 0, 1, 2, 0, 2, 3, 0, 3, 1}; 
+        // allHostMeshes.push_back(triangleFan);
 
 
         // Create the Vulkan meshes
