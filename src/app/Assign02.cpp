@@ -270,22 +270,33 @@ int main(int argc, char **argv) {
 
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
+        // pro::HostMesh<ProVertex> createShape(int maxSub = 10, bool flipWinding = false)
         
-        pro::HostMesh<ProVertex> simpleQuad {};
-        simpleQuad.vertices = {
-            {{-0.5f, -0.5f, 0.5f},  {1,0,0,1}},
-            {{0.5f, -0.5f, 0.5f},   {0,1,0,1}},
-            {{0.5f, 0.5f, 0.5f},    {0,0,1,1}},
-            {{-0.5f, 0.5f, 0.5f},   {1,1,1,1}}
+        // pro::HostMesh<ProVertex> simpleQuad {};
+        // simpleQuad.vertices = {
+        //     {{-0.5f, -0.5f, 0.5f},  {1,0,0,1}},
+        //     {{0.5f, -0.5f, 0.5f},   {0,1,0,1}},
+        //     {{0.5f, 0.5f, 0.5f},    {0,0,1,1}},
+        //     {{-0.5f, 0.5f, 0.5f},   {1,1,1,1}}
+        // };
+        // simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
+        // allHostMeshes.push_back(simpleQuad);
+
+        pro::HostMesh<ProVertex> triangle {};
+        triangle.vertices = {
+            {{0.0f, 0.0f, 0.5f}, {1,0,0,1}},
+            {{0.5f, 0.5f, 0.5f}, {0,1,0,1}},
+            {{0.0f, 0.5f, 0.5f}, {0,0,1,1}}
         };
-        simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
-        allHostMeshes.push_back(simpleQuad);
+        triangle.indices = { 0, 1, 2}; 
+        allHostMeshes.push_back(triangle);
+
 
         // Create the Vulkan meshes
         vector<pro::VulkanMesh> allMeshes {};    
         allMeshes.resize(allHostMeshes.size());       
         for(unsigned int i = 0; i < allMeshes.size(); i++) {
-            allMeshes[i] = pro::createVulkanMesh(vkInitData, simpleQuad, false);
+            allMeshes[i] = pro::createVulkanMesh(vkInitData, triangle, false);
             pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         }
 
