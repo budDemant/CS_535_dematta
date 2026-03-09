@@ -282,21 +282,23 @@ int main(int argc, char **argv) {
         // simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
         // allHostMeshes.push_back(simpleQuad);
 
-        pro::HostMesh<ProVertex> triangle {};
-        triangle.vertices = {
+        pro::HostMesh<ProVertex> triangleFan {};
+        triangleFan.vertices = {
             {{0.0f, 0.0f, 0.5f}, {1,0,0,1}},
-            {{0.5f, 0.5f, 0.5f}, {0,1,0,1}},
-            {{0.0f, 0.5f, 0.5f}, {0,0,1,1}}
+            {{0.5f, 0.0f, 0.5f}, {0,1,0,1}},
+            {{-0.5f, 0.5f, 0.5f}, {0,0,1,1}},
+            {{-0.5f, -0.5f, 0.5f}, {0,0,1,1}}
+
         };
-        triangle.indices = { 0, 1, 2}; 
-        allHostMeshes.push_back(triangle);
+        triangleFan.indices = { 0, 1, 2, 0, 2, 3, 0, 3, 1}; 
+        allHostMeshes.push_back(triangleFan);
 
 
         // Create the Vulkan meshes
         vector<pro::VulkanMesh> allMeshes {};    
         allMeshes.resize(allHostMeshes.size());       
         for(unsigned int i = 0; i < allMeshes.size(); i++) {
-            allMeshes[i] = pro::createVulkanMesh(vkInitData, triangle, false);
+            allMeshes[i] = pro::createVulkanMesh(vkInitData, triangleFan, false);
             pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         }
 
