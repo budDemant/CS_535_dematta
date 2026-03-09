@@ -298,7 +298,7 @@ int main(int argc, char **argv) {
         vector<pro::VulkanMesh> allMeshes {};    
         allMeshes.resize(allHostMeshes.size());       
         for(unsigned int i = 0; i < allMeshes.size(); i++) {
-            allMeshes[i] = pro::createVulkanMesh(vkInitData, triangleFan, false);
+            allMeshes[i] = pro::createVulkanMesh(vkInitData, allHostMeshes[i], false);
             pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         }
 
