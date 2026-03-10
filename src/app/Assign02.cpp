@@ -128,7 +128,7 @@ pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
     const float PI = 3.14159265f;
     const float RADIUS = 0.5f;
     triangleFan.vertices.push_back(
-        {{0.0f, 0.0f, 0.5f}, {1,0,0,1}} // center vertex
+        {{0.0f, 0.0f, 0.5f}, {0.5f, 0.5f, 0.5f, 1.0f}} // center vertex
     );
 
     for(unsigned int i = 0; i <= maxSub; i++) {
