@@ -132,26 +132,26 @@ pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
     );
 
     for(unsigned int i = 0; i <= maxSub; i++) {
-        float angle_i = 2 * PI * i / maxSub;
+        float angle_i = 2 * PI * i / maxSub; // angle of the current outer vertex around the circle
         float x = RADIUS * cos(angle_i);
         float y = RADIUS * sin(angle_i);
-        float r = (cos(angle_i)+1)/2;
+        float r = (cos(angle_i)+1)/2; // range: [0,1]
         float g = (sin(angle_i)+1)/2;
         float b = (cos(angle_i + PI)+1)/2;
         triangleFan.vertices.push_back({
-            {x, y, 0.5f},
-            {r, g, b, 1.0f} // color: R and G values change with each new position vertex
+            {x, y, 0.5f}, // position
+            {r, g, b, 1.0f} // color
         });
         
     };
-    if (flipWinding) {
+    if (flipWinding) { // clockwise
         for(unsigned int i = 0; i <= maxSub; i++) {
         triangleFan.indices.push_back(0); // center vertex
         triangleFan.indices.push_back(i + 2);
         triangleFan.indices.push_back(i + 1);
         };
     }
-    else {
+    else { // counter clockwise
         for(unsigned int i = 0; i <= maxSub; i++) {
         triangleFan.indices.push_back(0);
         triangleFan.indices.push_back(i + 1);
@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
         
-        allHostMeshes.push_back(createShape(30, false));
+        allHostMeshes.push_back(createShape(10, false));
         
         // pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false); 
         
@@ -325,18 +325,6 @@ int main(int argc, char **argv) {
         // };
         // simpleQuad.indices = { 0, 1, 2, 0, 2, 3 };        
         // allHostMeshes.push_back(simpleQuad);
-
-        // pro::HostMesh<ProVertex> triangleFan {};
-        // triangleFan.vertices = {
-        //     {{0.0f, 0.0f, 0.5f}, {1,0,0,1}},
-        //     {{0.5f, 0.0f, 0.5f}, {0,1,0,1}},
-        //     {{-0.5f, 0.5f, 0.5f}, {0,0,1,1}},
-        //     {{-0.5f, -0.5f, 0.5f}, {0,0,1,1}}
-
-        // };
-        // triangleFan.indices = { 0, 1, 2, 0, 2, 3, 0, 3, 1}; 
-        // allHostMeshes.push_back(triangleFan);
-
 
         // Create the Vulkan meshes
         vector<pro::VulkanMesh> allMeshes {};    
