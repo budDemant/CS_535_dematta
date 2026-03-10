@@ -139,9 +139,14 @@ pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
             {x, y, 0.5f},
             {x, y, 0.0f, 1.0f} // color: R and G values change with each new position vertex
         });
-        triangleFan.indices.push_back(i);
-
+        
     };
+    for(unsigned int i = 0; i <= maxSub; i++) {
+        triangleFan.indices.push_back(0);
+        triangleFan.indices.push_back(i);
+        triangleFan.indices.push_back(i + 1);
+    };
+
     return triangleFan;
 };
 
