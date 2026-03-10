@@ -141,12 +141,21 @@ pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
         });
         
     };
-    for(unsigned int i = 0; i <= maxSub; i++) {
+    if (flipWinding) {
+        for(unsigned int i = 0; i <= maxSub; i++) {
         triangleFan.indices.push_back(0);
-        triangleFan.indices.push_back(i);
+        triangleFan.indices.push_back(i + 2);
         triangleFan.indices.push_back(i + 1);
-    };
-
+        };
+    }
+    else {
+        for(unsigned int i = 0; i <= maxSub; i++) {
+        triangleFan.indices.push_back(0);
+        triangleFan.indices.push_back(i + 1);
+        triangleFan.indices.push_back(i + 2);
+        };
+    }
+    
     return triangleFan;
 };
 
@@ -300,7 +309,7 @@ int main(int argc, char **argv) {
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
         
-        allHostMeshes.push_back(createShape(5));
+        allHostMeshes.push_back(createShape(5, true));
         
         // pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false); 
         
