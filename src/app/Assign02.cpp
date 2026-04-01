@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
         
-        allHostMeshes.push_back(createShape(10, false));
+        allHostMeshes.push_back(createShape(300, false));
         
         // pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false); 
         
