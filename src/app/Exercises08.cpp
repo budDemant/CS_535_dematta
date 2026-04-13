@@ -139,6 +139,39 @@ int main(int argc, char **argv) {
                                                 vkInitData, 
                                                 pipelineCreateInfo);
 
+        pro::TransferManager transferManager = pro::TransferManager(pro::VulkanInitData &vkInitData);
+
+        vector<pro::VulkanMesh> allMeshes {};
+        vector<pro::VulkanMesh> waitingMeshes {};
+        vector<pro::VulkanMesh> readyToRenderMeshes {};
+
+        vector<pro::PendingBufferCopy> pendingCopies {};
+        vector<pro::BufferCopyReceipt> copiesToCheck {};
+
+        pro::HostMesh<ForgeVertex> hostMesh {};
+        hostMesh.vertices = {
+            {{-0.5f, -0.5f, 0.5f}},
+            {{0.5f, -0.5f, 0.5f}},
+            {{0.5f, 0.5f, 0.5f}},
+            {{-0.5f, 0.5f, 0.5f}}
+
+        };
+        hostMesh.indices = {0, 1, 2, 2, 3, 0};
+        
+        pro::VulkanMesh mesh = pro::createVulkanMesh(
+                                                    vkInitData,
+                                                    hostMesh,
+                                                    true);
+        pro::addPendingBufferCopies(mesh, hostMesh, pendingCopies);
+        auto transferReceipt = transferManager.submitCopies(
+            "SquareMesh", pendingCopies
+        );
+        copiesToCheck.push_back(transferReceipt);
+        pendingCopies.clear();
+
+        allMeshes.push_back(mesh);
+        waitingMeshes.push_back(mesh);
+
 
         while(!glfwWindowShouldClose(window)) {
             glfwPollEvents();
@@ -155,6 +188,22 @@ int main(int argc, char **argv) {
             
             vkInitData.device().resetCommandPool(commandData.commandPool);
             commandData.commandBuffer.begin(vk::CommandBufferBeginInfo());
+
+            for (auto it = copiesToCheck.begin(); it != copiesToCheck.end(); ) {
+                    if(transferManager.checkCompleted(*it, commandData.commandBuffer)) {
+                        readyToRenderMeshes.insert(
+                            readyToRenderMeshes.end(),
+                            waitingMeshes.begin(),
+                            waitingMeshes.end()
+                        );
+                        waitingMeshes.clear();
+                        it = copiesToCheck.erase(it);
+                    }
+                    else {
+                        it++;
+                    }
+                };
+
 
             //commandData.commandBuffer.resetQueryPool(queryPool, 0, 2);
             //commandData.commandBuffer.writeTimestamp2(
@@ -188,6 +237,10 @@ int main(int argc, char **argv) {
             commandData.commandBuffer.setScissor(0, scissors);
             
             // TODO: This is where the rendering magic happens
+
+            for(int i = 0; i < readyToRenderMeshes.size(); i++) {
+                pro::recordDrawVulkanMesh(commandData.commandBuffer, readyToRenderMeshes[i]);
+            }
 
             commandData.commandBuffer.endRendering();
 
@@ -225,6 +278,14 @@ int main(int argc, char **argv) {
         }
 
         vkInitData.device().waitIdle();
+
+        for(int i = 0; allMeshes.size(); i++  ) {
+            pro::cleanupVulkanMesh(vkInitData, allMeshes[i]);
+        }
+        allMeshes.clear();
+        waitingMeshes.clear();
+
+
         pro::cleanupVulkanPipeline(vkInitData, pipelineData);
         vkInitData.device().destroyQueryPool(queryPool);
         pro::cleanupFrameCommandData(vkInitData, commandData);
