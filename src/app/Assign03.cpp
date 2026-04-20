@@ -426,6 +426,13 @@ int main(int argc, char **argv) {
             offsetof(ProVertex, color) // offset
         ));
 
+        // NORMAL
+        pipelineCreateInfo.attribDesc.push_back(vk::VertexInputAttributeDescription(
+            2,
+            0,
+            vk::Format::eR32G32B32Sfloat, offsetof(ProVertex, normal)
+        ));
+
         // Actually create the pipeline data
         pro::VulkanPipelineData pipelineData = createVulkanPipeline(vkInitData, pipelineCreateInfo);
 
@@ -436,7 +443,7 @@ int main(int argc, char **argv) {
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
         
-        allHostMeshes.push_back(createShape(300, false));
+        // allHostMeshes.push_back(createShape(300, false));
         
         // pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false); 
         
@@ -452,11 +459,11 @@ int main(int argc, char **argv) {
 
         // Create the Vulkan meshes
         vector<pro::VulkanMesh> allMeshes {};    
-        allMeshes.resize(allHostMeshes.size());       
-        for(unsigned int i = 0; i < allMeshes.size(); i++) {
-            allMeshes[i] = pro::createVulkanMesh(vkInitData, allHostMeshes[i], false);
-            pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
-        }
+        // allMeshes.resize(allHostMeshes.size());       
+        // for(unsigned int i = 0; i < allMeshes.size(); i++) {
+        //     allMeshes[i] = pro::createVulkanMesh(vkInitData, allHostMeshes[i], false);
+        //     pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
+        // }
 
         // Background color data
         vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
