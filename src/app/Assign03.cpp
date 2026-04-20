@@ -194,6 +194,24 @@ pro::HostMesh<ProVertex> createShape(int maxSub = 5, bool flipWinding = false) {
     return triangleFan;
 };
 
+glm::mat4 assimpToGLM(aiMatrix4x4 &a) {
+    glm::mat4 m(1.0f); 
+    for (int i = 0; i < 4; i++) {
+        for (int k = 0; k < 4; k++) {
+            m[k][i] = a[i][k]; // convert from row-major to column-major
+        }
+    }
+    return m;
+}
+
+glm::mat4 makeRotateZ(glm::vec3 offset) {
+    glm::mat4 negOffset = glm::translate(glm::mat4(1.0f), -offset); // negative offset translation
+    glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f), glm::radians(rotAngleZ), glm::vec3(0, 0, 1));
+    glm::mat4 translateOffset = glm::translate(glm::mat4(1.0f), offset);
+    glm::mat4 compositeTransform = translateOffset * rotateZ * negOffset; // right to left
+    return compositeTransform;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MAIN FUNCTION
 ///////////////////////////////////////////////////////////////////////////////
