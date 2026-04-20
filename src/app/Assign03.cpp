@@ -63,10 +63,10 @@ static void key_callback(   GLFWwindow *window,
             rotAngleZ -= 1.0;
         }
         else if (key == GLFW_KEY_O) {
-            useNormalAsColor += 0.1;
+            useNormalAsColor = glm::clamp(useNormalAsColor + 0.1f, 0.0f, 1.0f);
         }
         else if (key == GLFW_KEY_I) {
-            useNormalAsColor -= 0.1;
+            useNormalAsColor = glm::clamp(useNormalAsColor - 0.1f, 0.0f, 1.0f);
         }
         else if (key == GLFW_KEY_U) {
             zOffset += 0.05;
