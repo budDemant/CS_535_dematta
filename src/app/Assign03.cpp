@@ -100,6 +100,7 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
                     const pro::VulkanImage &depthImage,
                     pro::VulkanPipelineData &pipelineData,
                     vector<pro::VulkanMesh> allMeshes,
+                    // const aiScene *scene, // ...
                     vk::ClearColorValue &backgroundColor) {
 
     // Reset our command pool so it's cleared and ready to go
@@ -210,6 +211,36 @@ glm::mat4 makeRotateZ(glm::vec3 offset) {
     glm::mat4 translateOffset = glm::translate(glm::mat4(1.0f), offset);
     glm::mat4 compositeTransform = translateOffset * rotateZ * negOffset; // right to left
     return compositeTransform;
+}
+
+void renderSceneNode(vk::CommandBuffer &commandBuffer, pro::VulkanPipelineData 
+&pipelineData, vector<pro::VulkanMesh> &allMeshes, aiNode *node, glm::mat4 parentMat, 
+int level) {
+    glm::mat4 nodeT = assimpToGLM(node->mTransformation);
+    glm::mat4 modelMat = parentMat * nodeT;
+    glm::vec3 pos = glm::vec3(modelMat[3]); // [3] is last column
+    glm::mat4 R = makeRotateZ(pos);
+    R = glm::translate(glm::vec3(0, 0, zOffset)) * R;
+    glm::mat4 tmpModel = R * modelMat;
+    UPushVertex upv = {};
+    upv.modelMat = tmpModel;
+    upv.useNormalAsColor = useNormalAsColor;
+
+    commandBuffer.pushConstants(
+                pipelineData.layout,
+                vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                0,
+                sizeof(UPushVertex),
+                &upv
+    );
+
+    for (int i = 0; i < node->mNumMeshes; i++) {
+        int index = node->mMeshes[i];
+        pro::recordDrawVulkanMesh(commandBuffer, allMeshes.at(index));
+    }
+    for (int i = 0; i < node->mNumChildren; i++) {
+        renderSceneNode(commandBuffer, pipelineData, allMeshes, node->mChildren[i], modelMat, level + 1);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
