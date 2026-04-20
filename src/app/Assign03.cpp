@@ -275,6 +275,24 @@ pro::HostMesh<ProVertex> extractMeshData(aiMesh *mesh) {
 int main(int argc, char **argv) {
     cout << "BEGIN PROGRAM..." << endl;
 
+    string modelPath = "sampleModels/sphere.obj"; // default model path
+    if (argc >= 2) {
+        modelPath = string(argv[1]);
+    }
+
+    unsigned int aiFlags = aiProcess_Triangulate | aiProcess_FlipUVs |
+                            aiProcess_GenNormals | aiProcess_JoinIdenticalVertices;
+    if (flipWindingOrder) {
+        aiFlags |= aiProcess_FlipWindingOrder;
+    }
+
+    Assimp::Importer importer; // to load the model
+    const aiScene *scene = importer.ReadFile(modelPath, aiFlags);
+    if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) {
+        cerr << "ERROR: Failed to load model '" << modelPath << "': "<< importer.GetErrorString() << endl;
+        exit(1); // exit if model doesn't load correctly
+    }
+
     // Set app name
     string appName = "Assign03";
     string windowName = appName + ": dematta";
@@ -479,7 +497,7 @@ int main(int argc, char **argv) {
                 allDepthImages[indexFlight],
                 pipelineData,
                 allMeshes,
-                // scene,
+                scene,
                 backgroundColor);
                     
             // Submit to queue
