@@ -100,7 +100,7 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
                     const pro::VulkanImage &depthImage,
                     pro::VulkanPipelineData &pipelineData,
                     vector<pro::VulkanMesh> allMeshes,
-                    // const aiScene *scene, // ...
+                    const aiScene *scene,
                     vk::ClearColorValue &backgroundColor) {
 
     // Reset our command pool so it's cleared and ready to go
@@ -139,9 +139,14 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     vk::Rect2D scissors[] = { pro::makeDefaultScissors(vkInitData) };
     cd.commandBuffer.setScissor(0, scissors);
 
-    // FOR NOW, just render all meshes
-    for(auto &mesh : allMeshes) {
-        pro::recordDrawVulkanMesh(cd.commandBuffer, mesh);
+    if (scene && scene->mRootNode) {
+        renderSceneNode(
+            cd.commandBuffer,
+            pipelineData,
+            allMeshes,
+            scene->mRootNode,
+            glm::mat4(1.0f),
+            0);
     }
     
     // End rendering
@@ -454,6 +459,7 @@ int main(int argc, char **argv) {
                 allDepthImages[indexFlight],
                 pipelineData,
                 allMeshes,
+                // scene,
                 backgroundColor);
                     
             // Submit to queue
