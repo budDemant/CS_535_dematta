@@ -18,11 +18,21 @@ struct ProVertex {
     glm::vec3 normal;
 };
 
+struct UPushVertex {
+    alignas(16) glm::mat4 modelMat;
+    alignas(16) float useNormalAsColor;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBALS
 ///////////////////////////////////////////////////////////////////////////////
 
 bool didWindowResize = false;
+
+float rotAngleZ = 0.0f;
+float useNormalAsColor = 1.0f;
+float zOffset = 0.5f; 
+bool flipWindingOrder = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLFW CALLBACKS
@@ -45,6 +55,24 @@ static void key_callback(   GLFWwindow *window,
     if(action == GLFW_PRESS || action == GLFW_REPEAT) {
         if(key == GLFW_KEY_ESCAPE) {
             glfwSetWindowShouldClose(window, true);
+        }
+        else if (key == GLFW_KEY_J) {
+            rotAngleZ += 1.0;
+        }
+        else if (key == GLFW_KEY_K) {
+            rotAngleZ -= 1.0;
+        }
+        else if (key == GLFW_KEY_O) {
+            useNormalAsColor += 0.1;
+        }
+        else if (key == GLFW_KEY_I) {
+            useNormalAsColor -= 0.1;
+        }
+        else if (key == GLFW_KEY_U) {
+            zOffset += 0.05;
+        }
+        else if (key == GLFW_KEY_Y) {
+            zOffset -= 0.05;
         }
     }
 }
