@@ -2,6 +2,9 @@
 #include <string>
 #include "pro/Prometheus.hpp"
 #include <cmath>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 using namespace std;
 
@@ -12,6 +15,7 @@ using namespace std;
 struct ProVertex {
     glm::vec3 pos;
     glm::vec4 color;
+    glm::vec3 normal;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
