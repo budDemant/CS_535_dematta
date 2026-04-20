@@ -248,6 +248,26 @@ int level) {
     }
 }
 
+pro::HostMesh<ProVertex> extractMeshData(aiMesh *mesh) {
+    pro::HostMesh<ProVertex> hostMesh {};
+    for (int i=0; i < mesh->mNumVertices; i++) {
+        ProVertex proVert = {};
+        aiVector3D aiPos = mesh->mVertices[i];
+        proVert.pos = glm::vec3(aiPos.x, aiPos.y, aiPos.z); // convert aiVector3D to glm::vec3 structs
+        proVert.color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+        aiVector3D aiNormal = mesh->mNormals[i];
+        proVert.normal = glm::vec3(aiNormal.x, aiNormal.y, aiNormal.z);
+        hostMesh.vertices.push_back(proVert); // add ProVertex to HostMesh's vertices list
+    }
+    for (int i=0; i < mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        for (int j=0; j < face.mNumIndices; j++) {
+            hostMesh.indices.push_back(face.mIndices[j]);
+        }
+    }
+    return hostMesh;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MAIN FUNCTION
 ///////////////////////////////////////////////////////////////////////////////
