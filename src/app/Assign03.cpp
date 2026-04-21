@@ -437,6 +437,12 @@ int main(int argc, char **argv) {
             vk::Format::eR32G32B32Sfloat, offsetof(ProVertex, normal)
         ));
 
+        pipelineCreateInfo.pushConstantRanges.push_back(
+            {vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+             0,
+             sizeof(UPushVertex)}
+        );
+
         // Actually create the pipeline data
         pro::VulkanPipelineData pipelineData = createVulkanPipeline(vkInitData, pipelineCreateInfo);
 
