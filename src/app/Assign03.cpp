@@ -94,6 +94,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 // PER-FRAME "DRAWING" FUNCTION
 ///////////////////////////////////////////////////////////////////////////////
 
+void renderSceneNode(vk::CommandBuffer &commandBuffer, pro::VulkanPipelineData 
+&pipelineData, vector<pro::VulkanMesh> &allMeshes, aiNode *node, glm::mat4 parentMat, 
+int level);
+
 void recordFrame(   pro::VulkanInitData &vkInitData, 
                     pro::FrameCommandData &cd,
                     const pro::VulkanSwapImage &swapImage,
