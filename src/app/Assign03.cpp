@@ -442,6 +442,7 @@ int main(int argc, char **argv) {
 
         // Create host data  
         vector<pro::HostMesh<ProVertex>> allHostMeshes {};
+        allHostMeshes.resize(scene->mNumMeshes); // Pre-allocate space for both lists
         
         // allHostMeshes.push_back(createShape(300, false));
         
@@ -458,12 +459,18 @@ int main(int argc, char **argv) {
         // allHostMeshes.push_back(simpleQuad);
 
         // Create the Vulkan meshes
-        vector<pro::VulkanMesh> allMeshes {};    
+        vector<pro::VulkanMesh> allMeshes {};
+        allMeshes.resize(scene->mNumMeshes);    
         // allMeshes.resize(allHostMeshes.size());       
         // for(unsigned int i = 0; i < allMeshes.size(); i++) {
         //     allMeshes[i] = pro::createVulkanMesh(vkInitData, allHostMeshes[i], false);
         //     pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
         // }
+        for(unsigned int i = 0; i < scene->mNumMeshes; i++) {
+            allHostMeshes[i] = extractMeshData(scene->mMeshes[i]);
+            allMeshes[i] = pro::createVulkanMesh(vkInitData, allHostMeshes[i], false);
+            pro::copyToHostVisibleVulkanMesh(vkInitData, allMeshes[i], allHostMeshes[i]);            
+        }
 
         // Background color data
         vk::ClearColorValue backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
