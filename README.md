@@ -23,3 +23,6 @@ This application is a copy of VulkanStart, except it starts with a different bac
 
 ### Assign02
 The createShape function procedurally generates a triangle fan mesh, each triangle consisting of a center vertex, an outer vertex, and an adjacent outer vertex. The outer vertices are placed evenly and given color using trigonometric functions (cos and sin). The number of triangles generated is controlled by the maxSub (maximum subdivision) parameter. Increasing this parameter converges the shape into a closer approximation of a circle. The flipWinding parameter is a boolean that demonstrates back-face culling effects.
+
+### Assign03
+This application loads a model with Assimp and builds Vulkan meshes from the imported vertex and index data. It traverses the Assimp scene graph recursively so each node is drawn with inherited transforms, then applies an additional local Z rotation and Z offset controlled by keyboard input. The shader can blend between vertex color and normal-based color using push constants, allowing normals to be visualized directly.
