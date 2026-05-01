@@ -108,6 +108,28 @@ static void key_callback(   GLFWwindow *window,
 // When the mouse moves...
 static void mouse_position_callback(GLFWwindow* window, double xpos, double ypos) {
     glm::vec2 curMouse = glm::vec2(xpos, ypos);
+    glm::vec2 mousePos = glm::vec2(xpos, ypos);
+    glm::vec2 diffPos = lastMousePos - mousePos;
+    lastMousePos = mousePos; // store last known mouse pos
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    if (width >=0 && height >=0) {
+        diffPos.x /= width; // normalize mouse motion difference
+        diffPos.y /= height;
+        float speed = 50.0f;
+        diffPos *= speed;
+        // compute current camera direction and local x axis
+        glm::vec3 direction = glm::normalize(camera.center - camera.eye);
+        glm::vec3 localX = glm::normalize(glm::cross(direction, camera.up));
+        // create the appropriate matrices
+        glm::mat4 negEye = glm::translate(-camera.eye); 
+        glm::mat4 rotateY = glm::rotate(glm::radians(diffPos.x), camera.up); 
+        glm::mat4 rotateX = glm::rotate(glm::radians(diffPos.y), localX);
+        glm::mat4 posEye = glm::translate(camera.eye);
+        // transform the camera "look at" point
+        camera.center = glm::vec3( 
+        posEye*rotateX*rotateY*negEye*glm::vec4(camera.center, 1.0));
+    }
     //cout << "Mouse pos: " << glm::to_string(curMouse) << endl;
 }
 
