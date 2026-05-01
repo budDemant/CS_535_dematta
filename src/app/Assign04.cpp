@@ -23,6 +23,27 @@ struct UPushVertex {
     alignas(16) float useNormalAsColor;
 };
 
+struct UBOVertex { 
+    alignas(16) glm::mat4 viewMat; 
+    alignas(16) glm::mat4 projMat; 
+};
+
+struct alignas(16) PointLight { 
+    glm::vec4 pos;     
+    glm::vec4 color; 
+}; 
+
+struct alignas(16) UBOFragment { 
+    glm::vec4 cameraPos; 
+    alignas(16) uint32_t lightCnt; 
+};
+
+struct Camera { 
+    glm::vec3 eye = glm::vec3(0.0f, 0.0f, 1.5f); 
+    glm::vec3 center = glm::vec3(0.0f, 0.0f, 1.0f); 
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBALS
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,8 +52,15 @@ bool didWindowResize = false;
 
 float rotAngleZ = 0.0f;
 float useNormalAsColor = 1.0f;
-float zOffset = 0.5f; 
-bool flipWindingOrder = true;
+float zOffset = 0.0f; 
+bool flipWindingOrder = false;
+
+Camera camera {}; 
+UBOVertex uboVertHost {}; 
+UBOFragment uboFragHost {}; 
+vector<PointLight> hostLights {}; 
+glm::vec2 lastMousePos {}; 
+bool lightDataChanged = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLFW CALLBACKS
