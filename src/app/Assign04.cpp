@@ -79,6 +79,10 @@ static void key_callback(   GLFWwindow *window,
                             int scancode,
                             int action,
                             int mods) {
+    // compute the camera direction, the local X direction, and the speed
+    glm::vec3 direction = glm::normalize(camera.center - camera.eye); 
+    glm::vec3 localX = glm::normalize(glm::cross(direction, camera.up)); 
+    float speed = 0.1f;
 
     if(action == GLFW_PRESS || action == GLFW_REPEAT) {
         if(key == GLFW_KEY_ESCAPE) {
@@ -100,6 +104,40 @@ static void key_callback(   GLFWwindow *window,
             zOffset += 0.05;
         }
         else if (key == GLFW_KEY_Y) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_W) {
+            camera.eye += direction * speed;
+            camera.center += direction * speed;
+        }
+        else if (key == GLFW_KEY_S) {
+            camera.eye -= direction * speed;
+            camera.center -= direction * speed;
+        }
+        else if (key == GLFW_KEY_D) {
+            camera.eye += localX * speed;
+            camera.center += localX * speed;
+        }
+        else if (key == GLFW_KEY_A) {
+            camera.eye -= localX * speed;
+            camera.center -= localX * speed;
+        }
+        else if (key == GLFW_KEY_1) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_2) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_3) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_4) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_X) {
+            zOffset -= 0.05;
+        }
+        else if (key == GLFW_KEY_Z) {
             zOffset -= 0.05;
         }
     }
