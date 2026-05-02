@@ -625,6 +625,13 @@ int main(int argc, char **argv) {
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 2), 
             vk::DescriptorPoolSize(vk::DescriptorType::eStorageBuffer, 1) 
         };
+
+        pro::DescriptorPack descPack = pro::createDescriptorPack(vkInitData,  pipelineData, poolSizes);        
+        pro::updateBufferForDescriptorPack(vkInitData, descPack, uboVertData, 0, 0);    
+        pro::updateBufferForDescriptorPack(vkInitData, descPack, uboFragData, 0, 1);
+        pro::updateBufferForDescriptorPack(vkInitData, descPack, 
+                                            ssboLights, 0, 2, 
+                                            vk::DescriptorType::eStorageBuffer); 
         ///////////////////////////////////////////////////////////////////////
         // MESH CREATION
         ///////////////////////////////////////////////////////////////////////
@@ -701,7 +708,11 @@ int main(int argc, char **argv) {
                 pipelineData,
                 allMeshes,
                 scene,
-                backgroundColor);
+                backgroundColor,
+                uboVertData,
+                uboFragData,
+                ssboLights,
+                descPack);
                     
             // Submit to queue
             pro::submitToGraphicsQueue(vkInitData, commandData, indexSwap, resizeFunc);
@@ -741,6 +752,11 @@ int main(int argc, char **argv) {
         // Cleanup Vulkan-related stuff
         cleanupVulkanPipeline(vkInitData, pipelineData);
         cleanupFrameCommandData(vkInitData, commandData);
+        // buffer freed before descriptor pack cleanup, descPack cleaned before depth images
+        pro::cleanupVulkanBuffer(vkInitData, uboVertData); 
+        pro::cleanupVulkanBuffer(vkInitData, uboFragData); 
+        pro::cleanupVulkanBuffer(vkInitData, ssboLights); 
+        pro::cleanupDescriptorPack(vkInitData, descPack); 
         cleanupAllVulkanDepthImages(vkInitData, allDepthImages);
 
         // VulkanInitData will be cleaned up automatically when it falls out of scope.
