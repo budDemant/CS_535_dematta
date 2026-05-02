@@ -26,3 +26,6 @@ The createShape function procedurally generates a triangle fan mesh, each triang
 
 ### Assign03
 This application loads a model with Assimp and builds Vulkan meshes from the imported vertex and index data. It traverses the Assimp scene graph recursively so each node is drawn with inherited transforms, then applies an additional local Z rotation and Z offset controlled by keyboard input. The shader can blend between vertex color and normal-based color using push constants, allowing normals to be visualized directly.
+
+### Assign04
+This application builds upon Assign03 by adding a dynamic lighting system. It implements a camera controlled via keyboard and mouse look, with a ring of 4 point lights positioned around the scene. The scene is lit using diffuse and specular shading, computed in the fragment shader by iterating over lights stored in an SSBO. The number of active lights can be controlled with X/Z keys, and light colors can be toggled with number keys (1=white, 2=red, 3=green, 4=blue). Final pixel colors are processed with Reinhard tone mapping to handle bright lighting contributions.
