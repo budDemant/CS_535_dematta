@@ -209,7 +209,11 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
                     pro::VulkanPipelineData &pipelineData,
                     vector<pro::VulkanMesh> allMeshes,
                     const aiScene *scene,
-                    vk::ClearColorValue &backgroundColor) {
+                    vk::ClearColorValue &backgroundColor,
+                    pro::VulkanBuffer &uboVertData,
+                    pro::VulkanBuffer &uboFragData,
+                    pro::VulkanBuffer &ssboLights,
+                    pro::DescriptorPack &descPack) {
 
     // Reset our command pool so it's cleared and ready to go
     vkInitData.device().resetCommandPool(cd.commandPool);
@@ -246,6 +250,26 @@ void recordFrame(   pro::VulkanInitData &vkInitData,
     
     vk::Rect2D scissors[] = { pro::makeDefaultScissors(vkInitData) };
     cd.commandBuffer.setScissor(0, scissors);
+
+    uboVertHost.viewMat = glm::lookAt(camera.eye, camera.center, camera.up);
+    float fov = glm::radians(90.0f);
+    float aspectRatio = ((float) vkInitData.swapchain().extent.width) / ((float) vkInitData.swapchain().extent.height);
+    float near = 0.01f;
+    float far = 1000.0f;
+    uboVertHost.projMat = glm::perspective(fov, aspectRatio, near, far);
+    // update the camera position for the fragment shader UBO
+    uboFragHost.cameraPos = glm::vec4(camera.eye, 1.0f);
+    // copy over the UBO data
+    pro::copyToHostVisibleVulkanBuffer(vkInitData, uboVertData, &uboVertHost);
+    pro::copyToHostVisibleVulkanBuffer(vkInitData, uboFragData, &uboFragHost);
+    
+    if (lightDataChanged == true) {
+        pro::copyToHostVisibleVulkanBuffer(vkInitData, ssboLights, hostLights.data());
+        lightDataChanged = false;
+    }
+    cd.commandBuffer.bindDescriptorSets( 
+    vk::PipelineBindPoint::eGraphics, pipelineData.layout,  
+    0, descPack.sets, {}); 
 
     if (scene && scene->mRootNode) {
         renderSceneNode(
