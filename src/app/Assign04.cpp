@@ -593,6 +593,39 @@ int main(int argc, char **argv) {
         pro::VulkanPipelineData pipelineData = createVulkanPipeline(vkInitData, pipelineCreateInfo);
 
         ///////////////////////////////////////////////////////////////////////
+        // VULKAN UNIFORM BUFFERS
+        ///////////////////////////////////////////////////////////////////////
+        pro::VulkanBuffer uboVertData = pro::createVulkanBuffer(vkInitData, 
+            sizeof(UBOVertex), vk::BufferUsageFlagBits::eUniformBuffer, 
+            pro::createVMAHostVisibleInfo());
+
+        pro::VulkanBuffer uboFragData = pro::createVulkanBuffer(vkInitData, 
+            sizeof(UBOFragment), vk::BufferUsageFlagBits::eUniformBuffer, 
+            pro::createVMAHostVisibleInfo());
+
+        float radius = 1.5f;
+        for (int i = 0; i< 4; i++) { // ring of 4 lights
+            float angle = 2.0f * glm::pi<float>() * i / 4.0f;
+            float x = radius * glm::cos(angle);
+            float z = radius * glm::sin(angle);
+            glm::vec4 pos = glm::vec4(x, 1.5f, z, 1.0f);
+            glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); // white
+            hostLights.push_back({pos, color});
+        }
+
+        uboFragHost.lightCnt = 1;
+        // storage buffer for lights
+        pro::VulkanBuffer ssboLights = pro::createVulkanBuffer(vkInitData,                                             
+                        sizeof(PointLight)*hostLights.size(), vk::BufferUsageFlagBits::eStorageBuffer, 
+                        pro::createVMAHostVisibleInfo()); 
+        pro::copyToHostVisibleVulkanBuffer(vkInitData, ssboLights, hostLights.data());
+        
+        // descriptor pool sizes
+        vector<vk::DescriptorPoolSize> poolSizes = { 
+            vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 2), 
+            vk::DescriptorPoolSize(vk::DescriptorType::eStorageBuffer, 1) 
+        };
+        ///////////////////////////////////////////////////////////////////////
         // MESH CREATION
         ///////////////////////////////////////////////////////////////////////
 
