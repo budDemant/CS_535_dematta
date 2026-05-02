@@ -123,22 +123,38 @@ static void key_callback(   GLFWwindow *window,
             camera.center -= localX * speed;
         }
         else if (key == GLFW_KEY_1) {
-            zOffset -= 0.05;
+            for (auto &light : hostLights) {
+                light.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+            lightDataChanged = true;
         }
         else if (key == GLFW_KEY_2) {
-            zOffset -= 0.05;
+            for (auto &light : hostLights) {
+                light.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+            }
+            lightDataChanged = true;
         }
         else if (key == GLFW_KEY_3) {
-            zOffset -= 0.05;
+            for (auto &light : hostLights) {
+                light.color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+            }
+            lightDataChanged = true;
         }
         else if (key == GLFW_KEY_4) {
-            zOffset -= 0.05;
+            for (auto &light : hostLights) {
+                light.color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+            }
+            lightDataChanged = true;
         }
         else if (key == GLFW_KEY_X) {
-            zOffset -= 0.05;
+            if (uboFragHost.lightCnt < hostLights.size()) {
+                uboFragHost.lightCnt += 1;
+            }   
         }
         else if (key == GLFW_KEY_Z) {
-            zOffset -= 0.05;
+            if (uboFragHost.lightCnt > 1) {
+                uboFragHost.lightCnt -= 1;
+            }   
         }
     }
 }
@@ -346,7 +362,7 @@ pro::HostMesh<ProVertex> extractMeshData(aiMesh *mesh) {
         ProVertex proVert = {};
         aiVector3D aiPos = mesh->mVertices[i];
         proVert.pos = glm::vec3(aiPos.x, aiPos.y, aiPos.z); // convert aiVector3D to glm::vec3 structs
-        proVert.color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+        proVert.color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
         aiVector3D aiNormal = mesh->mNormals[i];
         proVert.normal = glm::vec3(aiNormal.x, aiNormal.y, aiNormal.z);
         hostMesh.vertices.push_back(proVert); // add ProVertex to HostMesh's vertices list
