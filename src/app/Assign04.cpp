@@ -456,6 +456,11 @@ int main(int argc, char **argv) {
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // Initialize the last mouse position
+    double xpos, ypos; 
+    glfwGetCursorPos(window, &xpos, &ypos); 
+    lastMousePos = glm::vec2(xpos, ypos); 
     
     // Create scope for Vulkan Init Data (to ensure proper cleanup)
     {
@@ -524,6 +529,19 @@ int main(int argc, char **argv) {
 
         // Set up creation info for pipeline
         pro::VulkanPipelineCreateInfo pipelineCreateInfo(vkInitData);
+
+        // descriptor set layouts for the two uniform buffers and an SSBO
+        vector<vk::DescriptorSetLayoutBinding> allBindings = {             
+        vk::DescriptorSetLayoutBinding(0, vk::DescriptorType::eUniformBuffer, 1,      
+        vk::ShaderStageFlagBits::eVertex), 
+        vk::DescriptorSetLayoutBinding(1, vk::DescriptorType::eUniformBuffer, 1,  
+        vk::ShaderStageFlagBits::eFragment), 
+        vk::DescriptorSetLayoutBinding(2, vk::DescriptorType::eStorageBuffer, 1,  
+        vk::ShaderStageFlagBits::eFragment) 
+        };             
+        pipelineCreateInfo.allDescSetLayouts.push_back(                 
+        vkInitData.device().createDescriptorSetLayout(                 
+             vk::DescriptorSetLayoutCreateInfo({}, allBindings)));
 
         // Create shader info
         pipelineCreateInfo.shaderInfo = {
