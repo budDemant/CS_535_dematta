@@ -16,7 +16,7 @@ void main()
 	vec4 pos = vec4(position, 1.0);
 	gl_Position = pc.modelMat * pos;
 
-	vec3 world_normal = normalize(mat3(pc.modelMat) * normal);
+	vec3 world_normal = normalize(transpose(inverse(mat3(pc.modelMat))) * normal);
 	vec4 color_normal = vec4((world_normal + vec3(1.0)) / 2.0, 1.0);
 
 	interColor = mix(color, color_normal, pc.useNormalAsColor);
